@@ -1,74 +1,60 @@
 "use client";
-import { CompactTable } from "@table-library/react-table-library/compact";
 import { useTheme } from "@table-library/react-table-library/theme";
 import { getTheme } from "@table-library/react-table-library/baseline";
+import { Badge } from "@/components/ui/badge";
+
+interface UserNode {
+  id: number;
+  name: string;
+  email: string;
+  age: number;
+  city: string;
+}
+
 import {
   Table,
   Header,
   HeaderRow,
   Body,
   Row,
-  HeaderCell,
   Cell,
 } from "@table-library/react-table-library/table";
 
-const nodes = [
-  {
-    id: "0",
-    name: "Shopping List",
-    deadline: new Date(2020, 1, 15),
-    type: "TASK",
-    isComplete: true,
-    nodes: 3,
-  },
-  {
-    id: "1",
-    name: "Shopping List",
-    deadline: new Date(2020, 1, 15),
-    type: "TASK",
-    isComplete: true,
-    nodes: 3,
-  },
-  {
-    id: "2",
-    name: "Shopping List",
-    deadline: new Date(2020, 1, 15),
-    type: "TASK",
-    isComplete: true,
-    nodes: 3,
-  },
-];
+import {
+  useSort,
+  HeaderCellSort,
+  SortToggleType,
+} from "@table-library/react-table-library/sort";
+import { nodes } from "@/app/sample-data";
 
-type Node = {
-  id: string;
-  name: string;
-  deadline: Date;
-  type: string;
-  isComplete: boolean;
-  nodes: number;
-};
-
-const COLUMNS = [
-  { label: "Task", renderCell: (item: Node) => item?.name },
-  {
-    label: "Deadline",
-    renderCell: (item: Node) =>
-      item.deadline.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      }),
-  },
-  { label: "Type", renderCell: (item: Node) => item.type },
-  {
-    label: "Complete",
-    renderCell: (item: Node) => item.isComplete.toString(),
-  },
-  { label: "Tasks", renderCell: (item: Node) => item.nodes },
-];
-
-export default function ReactTablePage() {
+const ReactTable = () => {
   const data = { nodes };
+
+  function onSortChange(action: unknown, state: unknown) {
+    console.log(action, state);
+  }
+
+  const sort = useSort(
+    data,
+    {
+      onChange: onSortChange,
+    },
+    {
+      sortToggleType: SortToggleType.AlternateWithReset,
+      sortFns: {
+        ID: (array: unknown) =>
+          (array as UserNode[]).sort((a, b) => a.id - b.id),
+        NAME: (array: unknown) =>
+          (array as UserNode[]).sort((a, b) => a.name.localeCompare(b.name)),
+        EMAIL: (array: unknown) =>
+          (array as UserNode[]).sort((a, b) => a.email.localeCompare(b.email)),
+        AGE: (array: unknown) =>
+          (array as UserNode[]).sort((a, b) => a.age - b.age),
+        CITY: (array: unknown) =>
+          (array as UserNode[]).sort((a, b) => a.city.localeCompare(b.city)),
+      },
+    }
+  );
 
   const theme = useTheme([
     getTheme(),
@@ -82,14 +68,18 @@ export default function ReactTablePage() {
       font-size: 14px;
       padding: 12px 24px;
       `,
+
       Row: `
         &:hover {
           background-color: #f9fafb;
-          transition: background-color 0.1s ease-in-out;
+          transition: background-color 0.2s ease-in-out;
         }
+        padding: 12px 24px;
       `,
-      BaseRow: `
-      color: green;
+      Cell: `
+        padding: 16px 24px;
+        color: #364153;
+        font-size: 14px;
       `,
     },
   ]);
@@ -101,35 +91,29 @@ export default function ReactTablePage() {
           <h2 className="text-xl pl-6 py-6 font-semibold text-gray-800">
             User Details
           </h2>
-          {/* <Badge variant="secondary">100</Badge> */}
+          <Badge variant="secondary">100</Badge>
         </div>
-        <Table data={data} theme={theme}>
-          {(tableList: Node[]) => (
+        <Table data={data} theme={theme} sort={sort}>
+          {(tableList: UserNode[]) => (
             <>
               <Header>
                 <HeaderRow>
-                  <HeaderCell>Task</HeaderCell>
-                  <HeaderCell>Deadline</HeaderCell>
-                  <HeaderCell>Type</HeaderCell>
-                  <HeaderCell>Complete</HeaderCell>
-                  <HeaderCell>Tasks</HeaderCell>
+                  <HeaderCellSort sortKey="ID">ID</HeaderCellSort>
+                  <HeaderCellSort sortKey="NAME">Name</HeaderCellSort>
+                  <HeaderCellSort sortKey="EMAIL">Email</HeaderCellSort>
+                  <HeaderCellSort sortKey="AGE">Age</HeaderCellSort>
+                  <HeaderCellSort sortKey="CITY">City</HeaderCellSort>
                 </HeaderRow>
               </Header>
 
               <Body>
-                {tableList.map((item) => (
+                {tableList.map((item: UserNode) => (
                   <Row key={item.id} item={item}>
+                    <Cell>{item.id}</Cell>
                     <Cell>{item.name}</Cell>
-                    <Cell>
-                      {item.deadline.toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit",
-                      })}
-                    </Cell>
-                    <Cell>{item.type}</Cell>
-                    <Cell>{item.isComplete.toString()}</Cell>
-                    <Cell>{item.nodes?.length}</Cell>
+                    <Cell>{item.email}</Cell>
+                    <Cell>{item.age}</Cell>
+                    <Cell>{item.city}</Cell>
                   </Row>
                 ))}
               </Body>
@@ -139,4 +123,6 @@ export default function ReactTablePage() {
       </div>
     </div>
   );
-}
+};
+
+export default ReactTable;
