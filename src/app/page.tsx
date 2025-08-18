@@ -7,7 +7,7 @@ export default function Home() {
         <h1 className="text-3xl font-bold text-gray-900 mb-8">
           Simple Table Component
         </h1>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto border">
           <ReactTable />
         </div>
       </div>
