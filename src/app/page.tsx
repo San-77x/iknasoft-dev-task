@@ -1,4 +1,4 @@
-import ReactTable from "./components/react-table";
+import ReactTable from "../components/react-table";
 
 export default function Home() {
   return (
