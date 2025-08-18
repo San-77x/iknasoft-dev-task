@@ -1,7 +1,7 @@
 "use client";
 import { useTheme } from "@table-library/react-table-library/theme";
 import { getTheme } from "@table-library/react-table-library/baseline";
-import { Badge } from "@/components/ui/badge";
+// import { Badge } from "@/components/ui/badge";
 
 interface UserNode {
   id: number;
@@ -91,7 +91,7 @@ const ReactTable = () => {
           <h2 className="text-xl pl-6 py-6 font-semibold text-gray-800">
             User Details
           </h2>
-          <Badge variant="secondary">100</Badge>
+          {/* <Badge variant="secondary">100</Badge> */}
         </div>
         <Table data={data} theme={theme} sort={sort}>
           {(tableList: UserNode[]) => (
