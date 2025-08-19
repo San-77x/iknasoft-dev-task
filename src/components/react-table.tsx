@@ -1,7 +1,8 @@
 "use client";
 import { useTheme } from "@table-library/react-table-library/theme";
 import { getTheme } from "@table-library/react-table-library/baseline";
-// import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
 
 interface UserNode {
   id: number;
@@ -10,6 +11,13 @@ interface UserNode {
   age: number;
   city: string;
   address: string;
+  [key: string]: any;
+}
+
+interface Column {
+  key: string;
+  label: string;
+  sortKey: string;
 }
 
 import {
@@ -32,6 +40,25 @@ import { ChevronDown, ChevronsUpDown, ChevronUp } from "lucide-react";
 
 const ReactTable = () => {
   const data = { nodes };
+
+  const [columns, setColumns] = useState<Column[]>([
+    { key: "id", label: "ID", sortKey: "ID" },
+    { key: "name", label: "Name", sortKey: "NAME" },
+    { key: "email", label: "Email", sortKey: "EMAIL" },
+    { key: "age", label: "Age", sortKey: "AGE" },
+    { key: "city", label: "City", sortKey: "CITY" },
+    { key: "address", label: "Address", sortKey: "ADDRESS" },
+  ]);
+
+  const addNewColumn = () => {
+    const newColumnNumber = columns.length + 1;
+    const newColumn: Column = {
+      key: `column${newColumnNumber}`,
+      label: `Column ${newColumnNumber}`,
+      sortKey: `COLUMN${newColumnNumber}`,
+    };
+    setColumns([...columns, newColumn]);
+  };
 
   function onSortChange(action: unknown, state: unknown) {
     console.log(action, state);
@@ -58,7 +85,7 @@ const ReactTable = () => {
           (array as UserNode[]).sort((a, b) => a.city.localeCompare(b.city)),
         ADDRESS: (array: unknown) =>
           (array as UserNode[]).sort((a, b) =>
-            a.address.localeCompare(b.address)
+            a.address.localeCompare(b.address),
           ),
       },
 
@@ -70,7 +97,7 @@ const ReactTable = () => {
         iconUp: <ChevronUp />,
         iconDown: <ChevronDown />,
       },
-    }
+    },
   );
 
   const theme = useTheme([
@@ -99,8 +126,7 @@ const ReactTable = () => {
         font-size: 14px;
       `,
       Table: `
-      --data-table-library_grid-template-columns:  25% 25% 25% 25% minmax(150px, 1fr);
-      overflow: auto;
+      --data-table-library_grid-template-columns: ${columns.map(() => "minmax(200px, 1fr)").join(" ")};
       scrollbar-width: none;
       scrollbar-color: transparent transparent;
       `,
@@ -108,15 +134,23 @@ const ReactTable = () => {
   ]);
 
   return (
-    <div className="mx-auto min-h-screen ">
-      <div className=" my-6 bg-white border border-gray-200 rounded-2xl">
-        <div className="flex space-x-2 items-center">
-          <h2 className="text-xl pl-6 py-6 font-semibold text-gray-800">
-            User Details
-          </h2>
-          {/* <Badge variant="secondary">100</Badge> */}
+    <div className="mx-auto min-h-screen">
+      <div className="my-6 bg-white border border-gray-200 rounded-2xl">
+        <div className="flex justify-between items-center px-6 py-6">
+          <div className="flex space-x-2 items-center">
+            <h2 className="text-xl font-semibold text-gray-800">
+              User Details
+            </h2>
+            <Badge>100</Badge>
+          </div>
+          <button
+            onClick={addNewColumn}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            Add Column
+          </button>
         </div>
-        <div className="h-146 rounded-b-2xl overflow-y-hidden">
+        <div className="max-h-146 rounded-b-2xl overflow-x-auto overflow-y-auto">
           <Table
             layout={{
               fixedHeader: true,
@@ -131,36 +165,26 @@ const ReactTable = () => {
               <>
                 <Header>
                   <HeaderRow>
-                    <HeaderCellSort resize sortKey="ID">
-                      ID
-                    </HeaderCellSort>
-                    <HeaderCellSort resize sortKey="NAME">
-                      Name
-                    </HeaderCellSort>
-                    <HeaderCellSort resize sortKey="EMAIL">
-                      Email
-                    </HeaderCellSort>
-                    <HeaderCellSort resize sortKey="AGE">
-                      Age
-                    </HeaderCellSort>
-                    <HeaderCellSort resize sortKey="CITY">
-                      City
-                    </HeaderCellSort>
-                    <HeaderCellSort resize sortKey="ADDRESS">
-                      Address
-                    </HeaderCellSort>
+                    {columns.map((column) => (
+                      <HeaderCellSort
+                        key={column.key}
+                        resize
+                        sortKey={column.sortKey}
+                      >
+                        {column.label}
+                      </HeaderCellSort>
+                    ))}
                   </HeaderRow>
                 </Header>
 
                 <Body>
                   {tableList.map((item: UserNode) => (
                     <Row key={item.id} item={item}>
-                      <Cell>{item.id}</Cell>
-                      <Cell>{item.name}</Cell>
-                      <Cell>{item.email}</Cell>
-                      <Cell>{item.age}</Cell>
-                      <Cell>{item.city}</Cell>
-                      <Cell>{item.address}</Cell>
+                      {columns.map((column) => (
+                        <Cell key={column.key}>
+                          {item[column.key] || `Sample ${column.label}`}
+                        </Cell>
+                      ))}
                     </Row>
                   ))}
                 </Body>
