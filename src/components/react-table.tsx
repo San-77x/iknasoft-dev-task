@@ -4,14 +4,14 @@ import { getTheme } from "@table-library/react-table-library/baseline";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 
-interface UserNode {
+interface DealNode {
   id: number;
-  name: string;
-  email: string;
-  age: number;
-  city: string;
-  address: string;
-  [key: string]: any;
+  dealName: string;
+  stage: string;
+  owner: string;
+  dealValue: number;
+  date: string;
+  closeProbability: number;
 }
 
 interface Column {
@@ -41,24 +41,19 @@ import { ChevronDown, ChevronsUpDown, ChevronUp } from "lucide-react";
 const ReactTable = () => {
   const data = { nodes };
 
-  const [columns, setColumns] = useState<Column[]>([
+  const [columns] = useState<Column[]>([
     { key: "id", label: "ID", sortKey: "ID" },
-    { key: "name", label: "Name", sortKey: "NAME" },
-    { key: "email", label: "Email", sortKey: "EMAIL" },
-    { key: "age", label: "Age", sortKey: "AGE" },
-    { key: "city", label: "City", sortKey: "CITY" },
-    { key: "address", label: "Address", sortKey: "ADDRESS" },
+    { key: "dealName", label: "Deal Name", sortKey: "DEAL_NAME" },
+    { key: "stage", label: "Stage", sortKey: "STAGE" },
+    { key: "owner", label: "Owner", sortKey: "OWNER" },
+    { key: "dealValue", label: "Deal Value", sortKey: "DEAL_VALUE" },
+    { key: "date", label: "Date", sortKey: "DATE" },
+    {
+      key: "closeProbability",
+      label: "Close Probability",
+      sortKey: "CLOSE_PROBABILITY",
+    },
   ]);
-
-  const addNewColumn = () => {
-    const newColumnNumber = columns.length + 1;
-    const newColumn: Column = {
-      key: `column${newColumnNumber}`,
-      label: `Column ${newColumnNumber}`,
-      sortKey: `COLUMN${newColumnNumber}`,
-    };
-    setColumns([...columns, newColumn]);
-  };
 
   function onSortChange(action: unknown, state: unknown) {
     console.log(action, state);
@@ -69,23 +64,28 @@ const ReactTable = () => {
     {
       onChange: onSortChange,
     },
-
     {
       sortToggleType: SortToggleType.AlternateWithReset,
       sortFns: {
         ID: (array: unknown) =>
-          (array as UserNode[]).sort((a, b) => a.id - b.id),
-        NAME: (array: unknown) =>
-          (array as UserNode[]).sort((a, b) => a.name.localeCompare(b.name)),
-        EMAIL: (array: unknown) =>
-          (array as UserNode[]).sort((a, b) => a.email.localeCompare(b.email)),
-        AGE: (array: unknown) =>
-          (array as UserNode[]).sort((a, b) => a.age - b.age),
-        CITY: (array: unknown) =>
-          (array as UserNode[]).sort((a, b) => a.city.localeCompare(b.city)),
-        ADDRESS: (array: unknown) =>
-          (array as UserNode[]).sort((a, b) =>
-            a.address.localeCompare(b.address),
+          (array as DealNode[]).sort((a, b) => a.id - b.id),
+        DEAL_NAME: (array: unknown) =>
+          (array as DealNode[]).sort((a, b) =>
+            a.dealName.localeCompare(b.dealName),
+          ),
+        STAGE: (array: unknown) =>
+          (array as DealNode[]).sort((a, b) => a.stage.localeCompare(b.stage)),
+        OWNER: (array: unknown) =>
+          (array as DealNode[]).sort((a, b) => a.owner.localeCompare(b.owner)),
+        DEAL_VALUE: (array: unknown) =>
+          (array as DealNode[]).sort((a, b) => a.dealValue - b.dealValue),
+        DATE: (array: unknown) =>
+          (array as DealNode[]).sort(
+            (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+          ),
+        CLOSE_PROBABILITY: (array: unknown) =>
+          (array as DealNode[]).sort(
+            (a, b) => a.closeProbability - b.closeProbability,
           ),
       },
 
@@ -99,6 +99,77 @@ const ReactTable = () => {
       },
     },
   );
+
+  const getStageColor = (stage: string) => {
+    switch (stage.toLowerCase()) {
+      case "new":
+        return "bg-blue-100 text-blue-800";
+      case "discovery":
+        return "bg-purple-100 text-purple-800";
+      case "proposal":
+        return "bg-yellow-100 text-yellow-800";
+      case "negotiation":
+        return "bg-orange-100 text-orange-800";
+      case "won":
+        return "bg-green-100 text-green-800";
+      case "lost":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(value);
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  const renderCellContent = (item: DealNode, columnKey: string) => {
+    switch (columnKey) {
+      case "stage":
+        return (
+          <span
+            className={`px-3 py-1 rounded-full text-xs font-medium ${getStageColor(item.stage)}`}
+          >
+            {item.stage.charAt(0).toUpperCase() + item.stage.slice(1)}
+          </span>
+        );
+      case "dealValue":
+        return (
+          <span className="font-medium">{formatCurrency(item.dealValue)}</span>
+        );
+      case "date":
+        return formatDate(item.date);
+      case "closeProbability":
+        return (
+          <div className="flex items-center space-x-2">
+            <div className="w-16 bg-gray-200 rounded-full h-2">
+              <div
+                className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${item.closeProbability}%` }}
+              ></div>
+            </div>
+            <span className="text-sm font-medium">
+              {item.closeProbability}%
+            </span>
+          </div>
+        );
+      default:
+        return item[columnKey];
+    }
+  };
 
   const theme = useTheme([
     getTheme(),
@@ -141,14 +212,8 @@ const ReactTable = () => {
             <h2 className="text-xl font-semibold text-gray-800">
               User Details
             </h2>
-            <Badge>100</Badge>
+            <Badge>{data.nodes.length}</Badge>
           </div>
-          <button
-            onClick={addNewColumn}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-          >
-            Add Column
-          </button>
         </div>
         <div className="max-h-146 rounded-b-2xl overflow-x-auto overflow-y-auto">
           <Table
@@ -161,7 +226,7 @@ const ReactTable = () => {
             theme={theme}
             sort={sort}
           >
-            {(tableList: UserNode[]) => (
+            {(tableList: DealNode[]) => (
               <>
                 <Header>
                   <HeaderRow>
@@ -178,11 +243,11 @@ const ReactTable = () => {
                 </Header>
 
                 <Body>
-                  {tableList.map((item: UserNode) => (
+                  {tableList.map((item: DealNode) => (
                     <Row key={item.id} item={item}>
                       {columns.map((column) => (
                         <Cell key={column.key}>
-                          {item[column.key] || `Sample ${column.label}`}
+                          {renderCellContent(item, column.key)}
                         </Cell>
                       ))}
                     </Row>
