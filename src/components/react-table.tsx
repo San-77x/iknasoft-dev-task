@@ -15,7 +15,7 @@ interface DealNode {
 }
 
 interface Column {
-  key: string;
+  key: keyof DealNode;
   label: string;
   sortKey: string;
 }
@@ -136,7 +136,7 @@ const ReactTable = () => {
     });
   };
 
-  const renderCellContent = (item: DealNode, columnKey: string) => {
+  const renderCellContent = (item: DealNode, columnKey: keyof DealNode) => {
     switch (columnKey) {
       case "stage":
         return (
