@@ -215,7 +215,7 @@ const ReactTable = () => {
             <Badge>{data.nodes.length}</Badge>
           </div>
         </div>
-        <div className="max-h-146 rounded-b-2xl overflow-x-auto overflow-y-auto">
+        <div className="h-146 rounded-b-2xl overflow-x-auto overflow-y-auto">
           <Table
             layout={{
               fixedHeader: true,
