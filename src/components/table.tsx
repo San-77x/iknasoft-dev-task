@@ -7,6 +7,7 @@ import { DealData, generateDemoData } from "./table/demo-data";
 import { StageBadge } from "./ui/stage-badge";
 import { DataTable } from "./table/data-table";
 import IndeterminateCheckbox from "./table/interminate-checkbox";
+import { EditableCell } from "./table/editable-cell";
 
 const columns: ColumnDef<DealData>[] = [
   {
@@ -47,11 +48,12 @@ const columns: ColumnDef<DealData>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Deal Name" />
     ),
-    cell: ({ getValue }) => (
-      <div className="font-medium text-gray-900 max-w-xs truncate">
-        {getValue() as string}
-      </div>
-    ),
+    cell: (props) => <EditableCell {...props} />,
+    // cell: ({ getValue }) => (
+    //   <div className="font-medium text-gray-900 max-w-xs truncate">
+    //     {getValue() as string}
+    //   </div>
+    // ),
   },
   {
     accessorKey: "stage",
@@ -74,32 +76,41 @@ const columns: ColumnDef<DealData>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Deal Value" />
     ),
-    cell: ({ getValue }) => {
-      const value = getValue() as number;
-      return (
-        <div className="font-medium text-gray-900">
-          ${value.toLocaleString()}
-        </div>
-      );
-    },
+    cell: (props) => (
+      <EditableCell
+        {...props}
+        type="number"
+        displayFormat={(value) => `$${(value as number).toLocaleString()}`}
+      />
+    ),
+    // cell: ({ getValue }) => {
+    //   const value = getValue() as number;
+    //   return (
+    //     <div className="font-medium text-gray-900">
+    //       ${value.toLocaleString()}
+    //     </div>
+    //   );
+    // },
   },
   {
     accessorKey: "date",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Date" />
     ),
-    cell: ({ getValue }) => {
-      const date = new Date(getValue() as string);
-      return (
-        <div className="text-gray-600">
-          {date.toLocaleDateString("en-US", {
+    cell: (props) => (
+      <EditableCell
+        {...props}
+        type="date"
+        displayFormat={(value) => {
+          const date = new Date(value as string);
+          return date.toLocaleDateString("en-US", {
             year: "numeric",
             month: "short",
             day: "numeric",
-          })}
-        </div>
-      );
-    },
+          });
+        }}
+      />
+    ),
   },
   {
     accessorKey: "closeProbability",
