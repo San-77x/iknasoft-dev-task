@@ -1,13 +1,60 @@
 "use client";
 
-import React from "react";
+import React, { HTMLProps } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "./table/data-table-column-header";
 import { DealData, generateDemoData } from "./table/demo-data";
 import { StageBadge } from "./ui/stage-badge";
 import { DataTable } from "./table/data-table";
 
+function IndeterminateCheckbox({
+  indeterminate,
+  className = "",
+  ...rest
+}: { indeterminate?: boolean } & HTMLProps<HTMLInputElement>) {
+  const ref = React.useRef<HTMLInputElement>(null!);
+
+  React.useEffect(() => {
+    if (typeof indeterminate === "boolean") {
+      ref.current.indeterminate = !rest.checked && indeterminate;
+    }
+  }, [ref, indeterminate]);
+
+  return (
+    <input
+      type="checkbox"
+      ref={ref}
+      className={className + " cursor-pointer"}
+      {...rest}
+    />
+  );
+}
+
 const columns: ColumnDef<DealData>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <IndeterminateCheckbox
+        {...{
+          checked: table.getIsAllRowsSelected(),
+          indeterminate: table.getIsSomeRowsSelected(),
+          onChange: table.getToggleAllRowsSelectedHandler(),
+        }}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="px-1">
+        <IndeterminateCheckbox
+          {...{
+            checked: row.getIsSelected(),
+            disabled: !row.getCanSelect(),
+            indeterminate: row.getIsSomeSelected(),
+            onChange: row.getToggleSelectedHandler(),
+          }}
+        />
+      </div>
+    ),
+  },
   {
     accessorKey: "id",
     header: ({ column }) => (
