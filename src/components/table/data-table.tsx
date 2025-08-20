@@ -221,60 +221,6 @@ export function DataTable<TData, TValue>({
             <ChevronLeft className="h-4 w-4" />
             Previous
           </button>
-
-          <div className="flex items-center space-x-1">
-            {Array.from({ length: table.getPageCount() }, (_, i) => i).map(
-              (pageIndex) => {
-                const isCurrentPage =
-                  pageIndex === table.getState().pagination.pageIndex;
-                const shouldShow =
-                  pageIndex === 0 ||
-                  pageIndex === table.getPageCount() - 1 ||
-                  Math.abs(pageIndex - table.getState().pagination.pageIndex) <=
-                    1;
-
-                if (!shouldShow) {
-                  if (
-                    pageIndex === 1 &&
-                    table.getState().pagination.pageIndex > 3
-                  ) {
-                    return (
-                      <span key={pageIndex} className="px-2 text-gray-500">
-                        ...
-                      </span>
-                    );
-                  }
-                  if (
-                    pageIndex === table.getPageCount() - 2 &&
-                    table.getState().pagination.pageIndex <
-                      table.getPageCount() - 4
-                  ) {
-                    return (
-                      <span key={pageIndex} className="px-2 text-gray-500">
-                        ...
-                      </span>
-                    );
-                  }
-                  return null;
-                }
-
-                return (
-                  <button
-                    key={pageIndex}
-                    onClick={() => table.setPageIndex(pageIndex)}
-                    className={`relative inline-flex items-center px-3 py-2 border text-sm font-medium rounded-md transition-colors duration-200 ${
-                      isCurrentPage
-                        ? "bg-blue-600 border-blue-600 text-white"
-                        : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
-                    }`}
-                  >
-                    {pageIndex + 1}
-                  </button>
-                );
-              },
-            )}
-          </div>
-
           <button
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
