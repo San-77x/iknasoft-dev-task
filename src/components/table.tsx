@@ -94,7 +94,7 @@ const columns: ColumnDef<DealData>[] = [
   },
 ];
 
-export function DemoTable() {
+export function ReactTable() {
   return (
     <div className="container mx-auto py-8">
       <div className="mb-6">
