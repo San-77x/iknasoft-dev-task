@@ -1,34 +1,12 @@
 "use client";
 
-import React, { HTMLProps } from "react";
+import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "./table/data-table-column-header";
 import { DealData, generateDemoData } from "./table/demo-data";
 import { StageBadge } from "./ui/stage-badge";
 import { DataTable } from "./table/data-table";
-
-function IndeterminateCheckbox({
-  indeterminate,
-  className = "",
-  ...rest
-}: { indeterminate?: boolean } & HTMLProps<HTMLInputElement>) {
-  const ref = React.useRef<HTMLInputElement>(null!);
-
-  React.useEffect(() => {
-    if (typeof indeterminate === "boolean") {
-      ref.current.indeterminate = !rest.checked && indeterminate;
-    }
-  }, [ref, indeterminate]);
-
-  return (
-    <input
-      type="checkbox"
-      ref={ref}
-      className={className + " cursor-pointer"}
-      {...rest}
-    />
-  );
-}
+import IndeterminateCheckbox from "./table/interminate-checkbox";
 
 const columns: ColumnDef<DealData>[] = [
   {
