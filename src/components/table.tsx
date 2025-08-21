@@ -12,8 +12,6 @@ import { EditableCell } from "./table/editable-cell";
 const columns: ColumnDef<DealData>[] = [
   {
     id: "select",
-    size: 30,
-    enableResizing: false,
     header: ({ table }) => (
       <IndeterminateCheckbox
         {...{
@@ -38,8 +36,6 @@ const columns: ColumnDef<DealData>[] = [
   },
   {
     accessorKey: "id",
-    size: 80,
-    enableResizing: false,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="ID" />
     ),
@@ -49,7 +45,6 @@ const columns: ColumnDef<DealData>[] = [
   },
   {
     accessorKey: "dealName",
-    size: 250,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Deal Name" />
     ),
@@ -62,7 +57,6 @@ const columns: ColumnDef<DealData>[] = [
   },
   {
     accessorKey: "stage",
-    size: 150,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Stage" />
     ),
@@ -70,7 +64,6 @@ const columns: ColumnDef<DealData>[] = [
   },
   {
     accessorKey: "owner",
-    size: 150,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Owner" />
     ),
@@ -80,7 +73,6 @@ const columns: ColumnDef<DealData>[] = [
   },
   {
     accessorKey: "dealValue",
-    size: 140,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Deal Value" />
     ),
@@ -102,7 +94,6 @@ const columns: ColumnDef<DealData>[] = [
   },
   {
     accessorKey: "date",
-    size: 130,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Date" />
     ),
@@ -123,7 +114,6 @@ const columns: ColumnDef<DealData>[] = [
   },
   {
     accessorKey: "closeProbability",
-    size: 160,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Close Probability" />
     ),
