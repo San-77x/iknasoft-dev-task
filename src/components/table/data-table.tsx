@@ -61,6 +61,8 @@ export function DataTable<TData, TValue>({
     onColumnVisibilityChange: setColumnVisibility,
     onGlobalFilterChange: setGlobalFilter,
     globalFilterFn: "includesString",
+    enableColumnResizing: true,
+    columnResizeMode: "onChange",
     state: {
       sorting,
       columnFilters,
@@ -121,7 +123,12 @@ export function DataTable<TData, TValue>({
       {/* Table Container with Horizontal Scroll */}
       <div className="border border-gray-200 rounded-lg bg-white shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-full">
+          <table
+            className="w-full min-w-full"
+            style={{
+              width: table.getCenterTotalSize(),
+            }}
+          >
             {/* Sticky Header */}
             <thead className="bg-gray-50 sticky top-0 z-10">
               {table.getHeaderGroups().map((headerGroup) => (
@@ -129,8 +136,10 @@ export function DataTable<TData, TValue>({
                   {headerGroup.headers.map((header) => (
                     <th
                       key={header.id}
-                      className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap"
-                      style={{ minWidth: "150px" }}
+                      className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap relative border-r border-gray-200"
+                      style={{
+                        width: header.getSize(),
+                      }}
                     >
                       {header.isPlaceholder
                         ? null
@@ -138,6 +147,15 @@ export function DataTable<TData, TValue>({
                             header.column.columnDef.header,
                             header.getContext(),
                           )}
+                      {header.column.getCanResize() && (
+                        <div
+                          onMouseDown={header.getResizeHandler()}
+                          onTouchStart={header.getResizeHandler()}
+                          className={`absolute right-0 top-0 h-full w-1 cursor-col-resize bg-blue-500 opacity-30 hover:opacity-100 ${
+                            header.column.getIsResizing() ? "opacity-100" : ""
+                          }`}
+                        />
+                      )}
                     </th>
                   ))}
                 </tr>
@@ -161,6 +179,9 @@ export function DataTable<TData, TValue>({
                         <td
                           key={cell.id}
                           className={`px-6 py-4 whitespace-nowrap text-sm text-gray-900 ${cellClassName}`}
+                          style={{
+                            width: cell.column.getSize(),
+                          }}
                         >
                           {flexRender(
                             cell.column.columnDef.cell,
