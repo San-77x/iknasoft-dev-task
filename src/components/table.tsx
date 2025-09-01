@@ -4,10 +4,16 @@ import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "./table/data-table-column-header";
 import { DealData, generateDemoData } from "./table/demo-data";
-import { StageBadge } from "./ui/stage-badge";
+
 import { DataTable } from "./table/data-table";
 import IndeterminateCheckbox from "./table/interminate-checkbox";
 import { EditableCell } from "./table/editable-cell";
+import { DropdownEditableCell } from "./table/dropdown-editable-cell";
+import { stageOptions } from "./table/stage-options";
+
+// Re-export components for external use
+export { DataTable, EditableCell, DropdownEditableCell, stageOptions };
+export type { DealData };
 
 const columns: ColumnDef<DealData>[] = [
   {
@@ -60,7 +66,7 @@ const columns: ColumnDef<DealData>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Stage" />
     ),
-    cell: ({ getValue }) => <StageBadge stage={getValue() as string} />,
+    cell: (props) => <DropdownEditableCell {...props} options={stageOptions} />,
   },
   {
     accessorKey: "owner",

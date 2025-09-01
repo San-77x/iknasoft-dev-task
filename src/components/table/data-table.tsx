@@ -48,10 +48,34 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [globalFilter, setGlobalFilter] = useState("");
+  const [tableData, setTableData] = useState(data);
+
+  // Update tableData when data prop changes
+  React.useEffect(() => {
+    setTableData(data);
+  }, [data]);
+
+  // Update data function for editable cells
+  const updateData = (rowIndex: number, columnId: string, value: unknown) => {
+    setTableData((old) =>
+      old.map((row, index) => {
+        if (index === rowIndex) {
+          return {
+            ...row,
+            [columnId]: value,
+          };
+        }
+        return row;
+      }),
+    );
+  };
 
   const table = useReactTable({
-    data,
+    data: tableData,
     columns,
+    meta: {
+      updateData,
+    },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),

@@ -1,26 +1,24 @@
 "use client";
 
 import React from "react";
+import { CellContext } from "@tanstack/react-table";
 
 export type TableMeta = {
   updateData: (rowIndex: number, columnId: string, value: unknown) => void;
 };
 
 // Editable cell component that can use React hooks
-export const EditableCell: React.FC<{
-  getValue: () => unknown;
-  row: { index: number };
-  column: { id: string };
-  table: any;
-  type?: "text" | "number" | "date";
-  displayFormat?: (value: unknown) => string;
-}> = ({
+export const EditableCell = <TData,>({
   getValue,
   row: { index },
   column: { id },
   table,
   type = "text",
   displayFormat,
+  ...props
+}: CellContext<TData, unknown> & {
+  type?: "text" | "number" | "date";
+  displayFormat?: (value: unknown) => string;
 }) => {
   const initialValue = getValue();
   const [value, setValue] = React.useState(initialValue);
@@ -30,7 +28,7 @@ export const EditableCell: React.FC<{
   // When the input is blurred, we'll call our table meta's updateData function
   const onBlur = () => {
     if (isEditing) {
-      (table.options.meta as TableMeta).updateData(index, id, value);
+      (table.options.meta as TableMeta)?.updateData(index, id, value);
       setIsEditing(false);
     }
   };
@@ -38,7 +36,7 @@ export const EditableCell: React.FC<{
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      (table.options.meta as TableMeta).updateData(index, id, value);
+      (table.options.meta as TableMeta)?.updateData(index, id, value);
       setIsEditing(false);
       (e.target as HTMLInputElement).blur();
     } else if (e.key === "Escape") {
